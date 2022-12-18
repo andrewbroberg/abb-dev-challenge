@@ -70,9 +70,9 @@ You are to build a frontend using VueJS, this is installed for you along with Ta
 4. The submitted guess must be stored in the database and be linked to the user that submitted it.
 5. The API will return back a `201` response with the guess and the status of each letter.
 6. You should display each guess in a grid and colour the letters as follows:
-   - Correct (Green)
-   - Incorrect (Gray)
-   - Wrong Location (Yellow)
+   - Letter is in the correct spot (Green)
+   - Letter is not in the word (Gray)
+   - Letter is in the word, but in the wrong location (Yellow)
 7. The user can only make a maximum of 6 guesses. If the user has used all their guesses, the API will return a `409 Conflict` response.
-8. If the user has used all their guesses, they should be shown what the correct answer was. This will be available in the response once the user reaches all their guesses.
+8. If the user has used all their guesses, they should be shown what the correct answer was. This will be available in the API response once all the guesses are reached.
 9. If the user has gotten the word correct, they shouldn't be able to submit anymore guesses.
