@@ -1,0 +1,135 @@
+openapi: 3.1.0
+x-stoplight:
+  id: gt7vkhwftewdk
+info:
+  title: Wordle Dev Challenge
+  version: '1.0'
+servers:
+  - url: 'http:/dev-challenge.test'
+    description: local
+paths:
+  /guesses:
+    post:
+      summary: Submit a guess
+      operationId: post-guess
+      responses:
+        '201':
+          description: Guess was successfully added
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 0
+                maxItems: 6
+                items:
+                  $ref: '#/components/schemas/Guess'
+              examples:
+                Guess with each status:
+                  value:
+                    - letter: B
+                      status: correct
+                    - letter: A
+                      status: incorrect
+                    - letter: C
+                      status: wrong_location
+                    - letter: O
+                      status: incorrect
+                    - letter: 'N'
+                      status: incorrect
+        '401':
+          description: 'Invalid Bearer token, or Bearer token was not provided'
+        '409':
+          description: User has reached their maximum number of guesses
+        '422':
+          description: Submitted guess does not match the required rules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                guess:
+                  type: string
+                  minLength: 5
+                  maxLength: 5
+                  pattern: '^[A-Z]{5}'
+            examples:
+              Submitting a guess:
+                value:
+                  guess: BACON
+        description: ''
+      description: |-
+        Submit a guess for the current word.
+
+        - Must be 5 uppercase alpha characters
+        - There is a maximum of 6 guesses allowed, any further guesses will be rejected
+    parameters: []
+  /game:
+    get:
+      summary: Get the current game status
+      tags: []
+      responses: {}
+      operationId: get-game
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameStatus'
+        description: 'The list of current guesses. If the user has used all their guesses, the `word` property will contain the correct word for the game'
+components:
+  schemas:
+    Guess:
+      title: Guess
+      x-stoplight:
+        id: 144yfrsr158y0
+      type: object
+      additionalProperties: false
+      properties:
+        letter:
+          type: string
+          minLength: 1
+          maxLength: 1
+          example: S
+        status:
+          type: string
+          enum:
+            - correct
+            - incorrect
+            - wrong_location
+      required:
+        - letter
+        - status
+    GameStatus:
+      title: GameStatus
+      x-stoplight:
+        id: rszl27t2ue4k9
+      type: object
+      properties:
+        guesses:
+          type: array
+          minItems: 0
+          maxItems: 6
+          items:
+            $ref: '#/components/schemas/Guess'
+        word:
+          type:
+            - string
+            - 'null'
+          description: 'If the status is won or lost, the word will be here, otherwise it will be null'
+        status:
+          type: string
+          enum:
+            - playing
+            - won
+            - lost
+      required:
+        - guesses
+        - word
+        - status
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []

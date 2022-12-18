@@ -63,6 +63,8 @@ The requirements of the challenge are as follows. You want to have a functioning
 
 You are to build a frontend using VueJS, this is installed for you along with TailwindCSS. The API should be built in Laravel which has been installed for you.
 
+**It is important that you ensure you implement and write to the API as per the spec provided in the `references` folder.**
+
 1. All request to the API are authenticated. You should provide the API token as the `Authorization: Bearer <token>` header.
 2. The game board should load the game from the API when loading the page. If the user was to come back to the page, it should load the current game status from the API. This can be found in the API Documentation under the `GET game` endpoint
 3. When a user types a 5 letter word, and presses `ENTER` on their keyboard, it should be submitted to the API. The is found under `POST guesses` endpoint.
