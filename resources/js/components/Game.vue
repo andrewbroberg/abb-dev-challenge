@@ -1,10 +1,10 @@
 <template>
-    <div class="container">
+    <div class="container max-w-xs flex flex-col">
         <div v-if="game.word">The correct word is: {{ game.word }}</div>
         <input type="text" v-model="guess" @keyup.enter="submitGuess">
-        <div class="flex flex-col">
-            <div v-for="guess in this.game.guesses" class="flex mb-2">
-                <div v-for="letter in guess" class="p-2 border" :class="letterClass(letter)">
+        <div class="flex flex-col justify-center">
+            <div v-for="guess in this.game.guesses" class="flex flex-row mt-2 items-center">
+                <div v-for="letter in guess" class="flex flex-1 p-2 border justify-center" :class="letterClass(letter)">
                     {{ letter.letter }}
                 </div>
             </div>
@@ -50,7 +50,9 @@ export default {
                 return 'bg-gray-700 text-white';
             }
 
-            return 'bg-yellow-700 text-white';
+            if (letter.status === 'wrong_location') {
+                return 'bg-yellow-700 text-white';
+            }
         }
     }
 }
