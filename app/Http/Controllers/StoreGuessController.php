@@ -15,7 +15,7 @@ class StoreGuessController extends Controller
     public function __invoke(StoreGuessRequest $request)
     {
         try {
-            $currentGame = Game::latest()->first();
+            $currentGame = Game::latest()->firstOrFail();
         } catch (ModelNotFoundException $e) {
             abort(Response::HTTP_BAD_REQUEST, 'No game is currently running');
         }

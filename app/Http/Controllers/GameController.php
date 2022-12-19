@@ -13,7 +13,7 @@ class GameController extends Controller
     public function __invoke(Request $request)
     {
         try {
-            $currentGame = Game::latest()->first();
+            $currentGame = Game::latest()->firstOrFail();
         } catch (ModelNotFoundException $e) {
             abort(Response::HTTP_BAD_REQUEST, 'No game is currently running');
         }
