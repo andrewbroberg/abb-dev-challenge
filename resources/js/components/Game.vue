@@ -6,7 +6,7 @@
 <script>
     export default {
         mounted() {
-
+            axios.get('https://wordle-challenge.aussiebb.dev/game')
         }
     }
 </script>
