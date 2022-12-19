@@ -16,10 +16,11 @@ class StoreGuessControllerTest extends TestCase
 
         $this->actingAs($user)
             ->postJson('api/guesses', [
-                'guess' => 'Start'
+                'guess' => 'Start',
             ])->assertUnprocessable()
+            ->dump()
             ->assertJsonValidationErrors([
-                'guess' => 'invalid'
+                'guess' => 'The guess format is invalid.',
             ]);
     }
 }

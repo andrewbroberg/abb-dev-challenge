@@ -8,7 +8,7 @@ servers:
   - url: 'http:/dev-challenge.test'
     description: local
 paths:
-  /guesses:
+  /api/guesses:
     post:
       summary: Submit a guess
       operationId: post-guess
@@ -35,12 +35,66 @@ paths:
                           status: incorrect
                     word: null
                     status: playing
+        '400':
+          description: Game currently not in progress
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
         '401':
           description: 'Invalid Bearer token, or Bearer token was not provided'
         '409':
           description: User has reached their maximum number of guesses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
         '422':
           description: Submitted guess does not match the required rules
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  Example 1:
+                    message: string
+                    errors:
+                      - guess:
+                          - Guess must be 5 characters
+                properties:
+                  message:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        guess:
+                          type: array
+                          items:
+                            type: string
+                      required:
+                        - guess
+                required:
+                  - message
+                  - errors
+              examples:
+                Validation Error:
+                  value:
+                    message: string
+                    errors:
+                      - guess:
+                          - Guess must be 5 characters
       requestBody:
         content:
           application/json:
@@ -64,18 +118,29 @@ paths:
         - Must be 5 uppercase alpha characters
         - There is a maximum of 6 guesses allowed, any further guesses will be rejected
     parameters: []
-  /game:
+  /api/game:
     get:
       summary: Get the current game status
       tags: []
-      responses: {}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameStatus'
+        '400':
+          description: Game not in progress
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
       operationId: get-game
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/GameStatus'
-        description: 'The list of current guesses. If the user has used all their guesses, the `word` property will contain the correct word for the game'
 components:
   schemas:
     GuessLetter:

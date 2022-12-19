@@ -9,15 +9,25 @@ use App\Models\User;
 use App\Models\Game;
 use App\Models\Guess;
 use Illuminate\Testing\Fluent\AssertableJson;
+use Spectator\Spectator;
 
 class GameControllerTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Spectator::using('Wordle-Dev-Challenge.yaml');
+
+    }
+
     /** @test */
     public function it_returns_an_error_if_no_game_is_running()
     {
         $this->actingAs(User::factory()->create())
-            ->get('api/game')
-            ->assertStatus(400);
+            ->getJson('api/game')
+            ->assertValidRequest()
+            ->assertValidResponse(400);
     }
 
     /** @test */
@@ -26,8 +36,9 @@ class GameControllerTest extends TestCase
         Game::factory()->create();
 
         $this->actingAs(User::factory()->create())
-            ->get('api/game')
-            ->assertStatus(200)
+            ->getJson('api/game')
+            ->assertValidRequest()
+            ->assertValidResponse(200)
             ->assertJson([
                 'guesses' => [],
                 'word' => null,
@@ -52,7 +63,8 @@ class GameControllerTest extends TestCase
 
         $this->actingAs($user)
             ->get('api/game')
-            ->assertStatus(200)
+            ->assertValidRequest()
+            ->assertValidResponse(200)
             ->assertJson(fn(AssertableJson $json) => $json->where('status', 'won')->etc()
             );
     }
@@ -75,7 +87,8 @@ class GameControllerTest extends TestCase
 
         $this->actingAs($user)
             ->get('api/game')
-            ->assertStatus(200)
+            ->assertValidRequest()
+            ->assertValidResponse(200)
             ->assertJson(fn(AssertableJson $json) => $json->where('status', 'lost')->etc()
             );
     }
