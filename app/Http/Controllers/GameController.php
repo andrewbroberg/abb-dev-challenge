@@ -15,7 +15,7 @@ class GameController extends Controller
         try {
             $currentGame = Game::latest()->first();
         } catch (ModelNotFoundException $e) {
-            abort(Response::HTTP_CONFLICT, 'No game is currently running');
+            abort(Response::HTTP_BAD_REQUEST, 'No game is currently running');
         }
 
         $guesses = $request->user()->guesses()->with('game')->where('game_id', $currentGame->id)->oldest()->get();

@@ -17,7 +17,7 @@ class StoreGuessController extends Controller
         try {
             $currentGame = Game::latest()->first();
         } catch (ModelNotFoundException $e) {
-            abort(Response::HTTP_CONFLICT, 'No game is currently running');
+            abort(Response::HTTP_BAD_REQUEST, 'No game is currently running');
         }
 
         $currentGuesses = $request->user()->guesses()->with('game')->where('game_id', $currentGame->id)->get();
