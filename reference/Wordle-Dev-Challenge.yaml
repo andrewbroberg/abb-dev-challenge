@@ -18,24 +18,23 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                minItems: 0
-                maxItems: 6
-                items:
-                  $ref: '#/components/schemas/Guess'
+                $ref: '#/components/schemas/GameStatus'
               examples:
-                Guess with each status:
+                Single guess submitted:
                   value:
-                    - letter: B
-                      status: correct
-                    - letter: A
-                      status: incorrect
-                    - letter: C
-                      status: wrong_location
-                    - letter: O
-                      status: incorrect
-                    - letter: 'N'
-                      status: incorrect
+                    guesses:
+                      - - letter: B
+                          status: wrong_location
+                        - letter: A
+                          status: incorrect
+                        - letter: C
+                          status: correct
+                        - letter: O
+                          status: wrong_location
+                        - letter: 'N'
+                          status: incorrect
+                    word: null
+                    status: playing
         '401':
           description: 'Invalid Bearer token, or Bearer token was not provided'
         '409':
@@ -47,6 +46,7 @@ paths:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               properties:
                 guess:
                   type: string
@@ -78,10 +78,10 @@ paths:
         description: 'The list of current guesses. If the user has used all their guesses, the `word` property will contain the correct word for the game'
 components:
   schemas:
-    Guess:
+    GuessLetter:
       title: Guess
       x-stoplight:
-        id: 144yfrsr158y0
+        id: 33a2f94df7e9f
       type: object
       additionalProperties: false
       properties:
@@ -116,16 +116,38 @@ components:
             - string
             - 'null'
           description: 'If the status is won or lost, the word will be here, otherwise it will be null'
+          example: BACON
         status:
           type: string
           enum:
             - playing
             - won
             - lost
+          example: playing
       required:
         - guesses
         - word
         - status
+    Guess:
+      title: Guess
+      x-stoplight:
+        id: ig9tuk6hb8g7n
+      type: array
+      minItems: 5
+      maxItems: 5
+      items:
+        $ref: '#/components/schemas/GuessLetter'
+      examples:
+        - - letter: B
+            status: wrong_location
+          - letter: A
+            status: incorrect
+          - letter: C
+            status: correct
+          - letter: O
+            status: wrong_location
+          - letter: 'N'
+            status: incorrect
   securitySchemes:
     bearerAuth:
       type: http
