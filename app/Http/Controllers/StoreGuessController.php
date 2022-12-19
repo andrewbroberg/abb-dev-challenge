@@ -3,9 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreGuessRequest;
-use App\Http\Requests\UpdateGuessRequest;
-use App\Models\Guess;
-use Illuminate\Http\Response;
 
 class StoreGuessController extends Controller
 {
@@ -14,11 +11,11 @@ class StoreGuessController extends Controller
         $currentGuesses = $request->user()->guesses()->where('word', config('game.word'))->get();
 
         if ($currentGuesses->count() >= 6) {
-            return response()->json(['error' => 'You have used all your guesses'], 409);
+            return response()->json(['message' => 'You have used all your guesses'], 409);
         }
 
         if ($currentGuesses->last() && $currentGuesses->last()->guess === config('game.word')) {
-            return response()->json(['error' => 'You have already gotten the answer correct.'], 409);
+            return response()->json(['message' => 'You have already gotten the answer correct.'], 409);
         }
 
         $request->user()->guesses()->create([

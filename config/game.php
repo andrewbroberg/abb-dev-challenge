@@ -1,4 +1,4 @@
 <?php
 return [
-    'word' => 'AGILE',
+    'word' => 'START',
 ];
