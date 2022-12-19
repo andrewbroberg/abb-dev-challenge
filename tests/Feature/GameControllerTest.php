@@ -18,7 +18,6 @@ class GameControllerTest extends TestCase
         parent::setUp();
 
         Spectator::using('Wordle-Dev-Challenge.yaml');
-
     }
 
     /** @test */

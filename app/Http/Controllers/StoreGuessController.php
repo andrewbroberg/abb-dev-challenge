@@ -54,6 +54,6 @@ class StoreGuessController extends Controller
             'guesses' => Guess::collection($guesses),
             'word' => $word,
             'status' => $status
-        ]);
+        ], Response::HTTP_CREATED);
     }
 }
