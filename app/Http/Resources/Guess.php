@@ -13,7 +13,7 @@ class Guess extends JsonResource
     public function toArray($request)
     {
         $characters = Str::of($this->guess)->ucsplit();
-        $word = Str::of($this->word)->ucsplit();
+        $word = Str::of($this->game->word)->ucsplit();
 
         return $characters->map(function ($letter, $key) use ($word) {
             $status = 'incorrect';

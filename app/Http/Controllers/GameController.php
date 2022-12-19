@@ -4,22 +4,32 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Resources\Guess;
+use App\Models\Game;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Response;
 
 class GameController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $guesses = $request->user()->guesses()->where('word', config('game.word'))->oldest()->get();
+        try {
+            $currentGame = Game::latest()->first();
+        } catch (ModelNotFoundException $e) {
+            abort(Response::HTTP_CONFLICT, 'No game is currently running');
+        }
+
+        $guesses = $request->user()->guesses()->with('game')->where('game_id', $currentGame->id)->oldest()->get();
 
         $status = 'playing';
         $word = null;
+        $lastGuess = $guesses->last();
 
-        if ($guesses->last() && $guesses->last()->guess === config('game.word')) {
+        if ($lastGuess && $lastGuess->guess === $lastGuess->game->word) {
             $status = 'won';
-            $word = config('game.word');
+            $word = $currentGame->word;
         } elseif ($guesses->count() === 6) {
             $status = 'lost';
-            $word = config('game.word');
+            $word = $currentGame->word;
         }
 
         return response()->json([

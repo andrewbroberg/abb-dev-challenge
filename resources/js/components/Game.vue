@@ -4,7 +4,7 @@
         <input type="text" v-model="guess" @keyup.enter="submitGuess">
         <div class="flex flex-col">
             <div v-for="guess in this.game.guesses" class="flex mb-2">
-                <div v-for="letter in guess" class="p-2 border">
+                <div v-for="letter in guess" class="p-2 border" :class="letterClass(letter)">
                     {{ letter.letter }}
                 </div>
             </div>
@@ -38,8 +38,19 @@ export default {
                     this.game = response.data
                     this.guess = ''
                 }).catch((error) => {
-                    alert(error)
+                    alert(error.response.data.message)
             })
+        },
+        letterClass(letter) {
+            if (letter.status === 'correct') {
+                return 'bg-green-700 text-white';
+            }
+
+            if (letter.status === 'incorrect') {
+                return 'bg-gray-700 text-white';
+            }
+
+            return 'bg-yellow-700 text-white';
         }
     }
 }

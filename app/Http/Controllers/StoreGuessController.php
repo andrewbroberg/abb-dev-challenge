@@ -3,41 +3,57 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreGuessRequest;
+use App\Models\Game;
+use Illuminate\Support\ItemNotFoundException;
+use Illuminate\Support\MultipleItemsFoundException;
+use Illuminate\Http\Response;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Resources\Guess;
 
 class StoreGuessController extends Controller
 {
     public function __invoke(StoreGuessRequest $request)
     {
-        $currentGuesses = $request->user()->guesses()->where('word', config('game.word'))->get();
+        try {
+            $currentGame = Game::latest()->first();
+        } catch (ModelNotFoundException $e) {
+            abort(Response::HTTP_CONFLICT, 'No game is currently running');
+        }
+
+        $currentGuesses = $request->user()->guesses()->with('game')->where('game_id', $currentGame->id)->get();
 
         if ($currentGuesses->count() >= 6) {
             return response()->json(['message' => 'You have used all your guesses'], 409);
         }
 
-        if ($currentGuesses->last() && $currentGuesses->last()->guess === config('game.word')) {
+        $lastGuess = $currentGuesses->last();
+
+        if ($lastGuess && $lastGuess->guess === $lastGuess->game->word) {
             return response()->json(['message' => 'You have already gotten the answer correct.'], 409);
         }
 
         $request->user()->guesses()->create([
-            'word' => config('game.word'),
+            'game_id' => $currentGame->id,
             'guess' => $request->input('guess')
         ]);
 
-        $guesses = $request->user()->guesses()->where('word', config('game.word'))->get();
+        $guesses = $request->user()->guesses()->with('game')->where('game_id', $currentGame->id)->get();
 
         $status = 'playing';
         $word = null;
 
-        if ($guesses->last() && $guesses->last()->guess === config('game.word')) {
+        $lastGuess = $guesses->last();
+
+        if ($lastGuess && $lastGuess->guess === $lastGuess->game->word) {
             $status = 'won';
-            $word = config('game.word');
+            $word = $currentGame->word;
         } elseif ($guesses->count() === 6) {
             $status = 'lost';
-            $word = config('game.word');
+            $word = $currentGame->word;
         }
 
         return response()->json([
-            'guesses' => \App\Http\Resources\Guess::collection($guesses),
+            'guesses' => Guess::collection($guesses),
             'word' => $word,
             'status' => $status
         ]);
