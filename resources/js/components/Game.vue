@@ -1,12 +1,13 @@
 <template>
     <div class="container">
+        Wordle
     </div>
 </template>
 
 <script>
     export default {
         mounted() {
-            axios.get('https://wordle-challenge.aussiebb.dev/game')
+
         }
     }
 </script>
