@@ -21,7 +21,7 @@ class GameControllerTest extends TestCase
     }
 
     /** @test */
-    public function it_can_display_the_current_game_status()
+    public function it_can_display_the_current_game_status_of_playing()
     {
         Game::factory()->create();
 
@@ -31,7 +31,7 @@ class GameControllerTest extends TestCase
             ->assertJson([
                 'guesses' => [],
                 'word' => null,
-                'status' => 'playing'
+                'status' => 'playing',
             ]);
     }
 
@@ -40,7 +40,7 @@ class GameControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $game = Game::factory()->create([
-            'WORD' => 'AGILE'
+            'WORD' => 'AGILE',
         ]);
 
         Guess::factory()
@@ -53,8 +53,7 @@ class GameControllerTest extends TestCase
         $this->actingAs($user)
             ->get('api/game')
             ->assertStatus(200)
-            ->assertJson(fn(AssertableJson $json) =>
-                $json->where('status', 'won')->etc()
+            ->assertJson(fn(AssertableJson $json) => $json->where('status', 'won')->etc()
             );
     }
 
@@ -63,7 +62,7 @@ class GameControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $game = Game::factory()->create([
-            'WORD' => 'AGILE'
+            'WORD' => 'AGILE',
         ]);
 
         Guess::factory()
@@ -77,8 +76,7 @@ class GameControllerTest extends TestCase
         $this->actingAs($user)
             ->get('api/game')
             ->assertStatus(200)
-            ->assertJson(fn(AssertableJson $json) =>
-                $json->where('status', 'lost')->etc()
+            ->assertJson(fn(AssertableJson $json) => $json->where('status', 'lost')->etc()
             );
     }
 }
