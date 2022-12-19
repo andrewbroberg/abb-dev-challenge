@@ -21,10 +21,6 @@ class StoreGuessController extends Controller
             return response()->json(['error' => 'You have already gotten the answer correct.'], 409);
         }
 
-        if ($request->user()->guesses()->where('word', config('game.word'))->count() >= 6) {
-            return response()->json(['error' => 'You have used all your guesses'], Response::HTTP_CONFLICT);
-        }
-
         $request->user()->guesses()->create([
             'word' => config('game.word'),
             'guess' => $request->input('guess')
