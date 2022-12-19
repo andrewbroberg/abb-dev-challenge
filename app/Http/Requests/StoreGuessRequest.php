@@ -9,7 +9,7 @@ class StoreGuessRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'guess' => ['required', 'string', 'size:5', 'regex:$[A-Z]{5}$']
+            'guess' => ['required', 'string', 'alpha', 'size:5', 'regex:$[A-Z]{5}$']
         ];
     }
 }

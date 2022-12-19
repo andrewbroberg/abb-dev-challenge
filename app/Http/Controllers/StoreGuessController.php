@@ -21,13 +21,13 @@ class StoreGuessController extends Controller
         $currentGuesses = $request->user()->guesses()->with('game')->where('game_id', $currentGame->id)->get();
 
         if ($currentGuesses->count() >= 6) {
-            return response()->json(['message' => 'You have used all your guesses'], 409);
+            abort(Response::HTTP_CONFLICT, 'You have used all your guesses');
         }
 
         $lastGuess = $currentGuesses->last();
 
         if ($lastGuess && $lastGuess->guess === $lastGuess->game->word) {
-            return response()->json(['message' => 'You have already gotten the answer correct.'], 409);
+            abort(Response::HTTP_CONFLICT, 'You have already gotten the answer correct.');
         }
 
         $request->user()->guesses()->create([
