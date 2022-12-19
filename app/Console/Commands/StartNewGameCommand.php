@@ -56,6 +56,8 @@ class StartNewGameCommand extends Command
             ]);
         });
 
+        $this->info("New game with word $word started.");
+
         return self::SUCCESS;
     }
 }
