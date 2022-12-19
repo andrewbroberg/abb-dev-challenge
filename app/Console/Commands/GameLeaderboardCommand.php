@@ -15,6 +15,6 @@ class GameLeaderboardCommand extends Command
     {
         $currentGame = Game::latest()->first();
 
-        dd(Guess::where('game_id', $currentGame->id)->groupBy('user_id')->get()->map(function (loc)));
+        dd(Guess::where('game_id', $currentGame->id)->groupBy('user_id')->get());
     }
 }
