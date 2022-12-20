@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Guess;
 use App\Models\Game;
+use Illuminate\Support\Collection;
 
 class GameLeaderboardCommand extends Command
 {
@@ -15,6 +16,24 @@ class GameLeaderboardCommand extends Command
     {
         $currentGame = Game::latest()->first();
 
-        dd(Guess::where('game_id', $currentGame->id)->groupBy('user_id')->get());
+        $leaderboard = Guess::where('game_id', $currentGame->id)->get()
+            ->groupBy('user_id')
+            ->reject(function (Collection $guesses) {
+                $lastGuess = $guesses->last();
+
+                return $lastGuess->guess !== $lastGuess->game->word;
+            })->map(function (Collection $guesses) {
+                $lastGuess = $guesses->last();
+
+                return [
+                    'name' => $lastGuess->user->name,
+                    'count' => $guesses->count(),
+                    'solved_at' => $lastGuess->created_at,
+                ];
+            })->sortBy(['count', 'solved_at']);
+
+        $this->table(['Team', 'Guesses', 'Solved At'], $leaderboard->toArray());
+
+        return self::SUCCESS;
     }
 }

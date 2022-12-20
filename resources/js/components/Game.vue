@@ -1,7 +1,7 @@
 <template>
     <div class="container max-w-xs flex flex-col">
         <div v-if="game.word">The correct word is: {{ game.word }}</div>
-        <input type="text" v-model="guess" @keyup.enter="submitGuess">
+        <input type="text" v-model="guess" @keyup.enter="submitGuess" placeholder="Guess">
         <div class="flex flex-col justify-center">
             <div v-for="guess in this.game.guesses" class="flex flex-row mt-2 items-center">
                 <div v-for="letter in guess" class="flex flex-1 p-2 border justify-center" :class="letterClass(letter)">
@@ -15,7 +15,17 @@
 <script>
 export default {
     mounted() {
-        axios.get('game')
+        this.apiToken = prompt("Enter your API token", this.apiToken)
+
+        if (!this.apiToken) {
+            return alert("No token provided, refresh and try again.")
+        }
+
+        axios.get('game', {
+            headers: {
+                'Authorization': "Bearer " + this.apiToken
+            }
+        })
             .then((response) => this.game = response.data)
             .catch(function (error) {
                 alert(error.data.error)
@@ -28,17 +38,22 @@ export default {
                 status: 'playing',
                 word: null,
             },
-            guess: ''
+            guess: '',
+            apiToken: ''
         }
     },
     methods: {
         submitGuess() {
-            axios.post('guesses', {"guess": this.guess})
+            axios.post('guesses', {"guess": this.guess}, {
+                headers: {
+                    'Authorization': "Bearer " + this.apiToken
+                }
+            })
                 .then((response) => {
                     this.game = response.data
                     this.guess = ''
                 }).catch((error) => {
-                    alert(error.response.data.message)
+                alert(error.response.data.message)
             })
         },
         letterClass(letter) {
