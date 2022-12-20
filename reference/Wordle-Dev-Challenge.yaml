@@ -5,7 +5,7 @@ info:
   title: Wordle Dev Challenge
   version: '1.0'
 servers:
-  - url: 'http:/dev-challenge.test'
+  - url: 'http://dev-challenge.test'
     description: local
 paths:
   /api/guesses:
